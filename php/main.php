@@ -6,17 +6,37 @@ $json = file_get_contents($url);
 $data = json_decode($json, true);
 $data = $data['data'];
 
+$venues = [];
 foreach ($data as $item) {
 	if (in_array($item['pokemonId'], SCAN) &&
 		((time() - $item['created']) < 600) &&
 		($item['userId'] == '13661365')) {
-		$addr = getAddr($item['latitude'], $item['longitude']);
-		$name = NAME[$item['pokemonId']];
+		$venues[] = join('-', array(
+			'expire' => date('h:i:s', $item['created']+900),
+			'name' => NAME[$item['pokemonId']],
+			'lat' => number_format($item['latitude'], 4),
+			'lon' => number_format($item['longitude'], 4),
+		));
+	}
+}
+
+$venues = array_unique($venues, SORT_REGULAR);
+
+foreach ($venues as $venue) {
+	if (!file_exists("/tmp/pokemon-{$venue}")) {
+		touch("/tmp/pokemon-{$venue}");
+		$venue = explode('-', $venue, 4);
+		$expire = $venue[0];
+		$name = $venue[1];
+		$lat = $venue[2];
+		$lon = $venue[3];
+		$addr = getAddr($lat, $lon);
+
 		getTelegram('sendVenue', array(
 			'chat_id' => CHANNEL,
-			'title' => $name . ', ' . date('h:i:s', $item['created']+900),
-			'latitude' => $item['latitude'],
-			'longitude' => $item['longitude'],
+			'title' => "{$name}, {$expire}",
+			'latitude' => $lat,
+			'longitude' => $lon,
 			'address' => $addr
 		));
 	}
