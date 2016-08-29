@@ -11,7 +11,7 @@ request("https://www.pokeradar.io/api/v1/submissions?" + qs.stringify(config.lat
 		var item = data[i];
 		if ((config.scan.indexOf(item.pokemonId) != -1) &&
 			((Math.floor(Date.now() / 1000) - item.created) < 600) &&
-			(item.trainerName == '(Poke Radar Prediction)')) {
+			(item.userId == '13661365')) {
 			request('https://maps.googleapis.com/maps/api/geocode/json?' + qs.stringify({
 				latlng: item.latitude + "," + item.longitude,
 				language: "zh-TW"

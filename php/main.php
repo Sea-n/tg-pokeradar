@@ -9,7 +9,7 @@ $data = $data['data'];
 foreach ($data as $item) {
 	if (in_array($item['pokemonId'], SCAN) &&
 		((time() - $item['created']) < 600) &&
-		($item['trainerName'] == '(Poke Radar Prediction)')) {
+		($item['userId'] == '13661365')) {
 		$addr = getAddr($item['latitude'], $item['longitude']);
 		$name = NAME[$item['pokemonId']];
 		getTelegram('sendVenue', array(
